@@ -1,0 +1,31 @@
+.right_part{
+    display: flex;
+   margin-left: 20px;
+
+}
+.container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: teal;
+    
+}
+
+.left_part {
+    display: flex;
+    gap: 50px;
+   
+   
+    padding: 10px;
+}
+
+.container a{
+    color: rgb(240, 237, 237);
+    text-decoration: none;
+    font-size: 18px;
+}
+.container img{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
