@@ -9,7 +9,7 @@ import closeIcon from "../../images/closeIcon.png";
 import EmojiPicker from '../Emoji/Emoji';
 let socket;
 
-const ENDPOINT = "http://localhost:5000/";
+const ENDPOINT = "https://chat-server2-g295.onrender.com/";
 
 const Chat = () => {
     const [id, setid] = useState("");
