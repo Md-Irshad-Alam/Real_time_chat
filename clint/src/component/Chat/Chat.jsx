@@ -11,7 +11,7 @@ import axios from 'axios'
 import {user} from '../Join/Join'
 let socket;
 
-const ENDPOINT = "https://chat-server2-g295.onrender.com/";
+const ENDPOINT = "https://chatserver-3fp6.onrender.com";
 
 const Chat = () => {
     const [id, setid] = useState("");
@@ -69,7 +69,7 @@ const Chat = () => {
   
     // Retrieve chat history from the server
     
-         axios.get('https://chat-server2-g295.onrender.com/getChatHistory', {
+         axios.get('https://chatserver-3fp6.onrender.com/getChatHistory', {
             params: { user: user }, // Pass the logged-in user's username as a parameter
         })
         .then((response) => {
