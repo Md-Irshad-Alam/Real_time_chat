@@ -1,0 +1,16 @@
+.user_sidebar{
+    
+    column-gap: 28rem;
+    padding: 15px; 
+    color: white;
+    overflow-x: hidden;
+    height: 94vh;
+}
+.user_card{
+    background-color: black;
+    display: flex;
+    justify-content: left;
+    padding: 15px;
+    width: 300px;
+
+}
