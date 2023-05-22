@@ -15,7 +15,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 let socket;
 
-const ENDPOINT = "https://chat-server2-g295.onrender.com/";
+const ENDPOINT = "https://chatserver-3fp6.onrender.com/";
 const Chat = () => {
     const [id, setid] = useState("");
     const [messages, setMessages] = useState([])
@@ -128,7 +128,7 @@ const send = () => {
     
     // Retrieve chat history from the server
     axios
-    .get('https://chat-server2-g295.onrender.com/getChatHistory', {
+    .get('https://chatserver-3fp6.onrender.com/getChatHistory', {
       params: { sender, receiver },
     })
     .then((response) => {
