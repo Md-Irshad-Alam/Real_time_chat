@@ -112,6 +112,7 @@ div#inner-sec img {
     box-sizing: border-box;
     display: flex;
     height: 7%;
+    margin-top:-1vh;
 }
 .user_contaoner {
     display: flex;
@@ -120,6 +121,9 @@ div#inner-sec img {
     background: bisque;
     height: 95vh;
     box-shadow: -85px 0 5px 0px darkseagreen
+}
+.user_contaoner{
+    height:86vh
 }
 .user_container li{
     
