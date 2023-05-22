@@ -141,7 +141,7 @@ const send = () => {
 
     // Fetch user list
     axios
-      .get("http://localhost:5000/getuser", {
+      .get("https://chatserver-3fp6.onrender.com/getuser", {
         params: { user: user }
       })
       .then((response) => {
