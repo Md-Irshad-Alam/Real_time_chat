@@ -15,8 +15,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 let socket;
 
+<<<<<<< HEAD
 // const ENDPOINT = "https://chat-server2-g295.onrender.com/";
 const ENDPOINT = "http://localhost:5000/";
+=======
+const ENDPOINT = "https://chatserver-3fp6.onrender.com";
+>>>>>>> 2f4c21d94d5b3bc8d2a9c719d48f93ea6cf86a0e
 
 const Chat = () => {
     const [id, setid] = useState("");
@@ -126,6 +130,7 @@ const send = () => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
     
+<<<<<<< HEAD
     // Retrieve chat history from the server
     axios
     .get('http://localhost:5000/getChatHistory', {
@@ -152,6 +157,20 @@ const send = () => {
         console.log("Error getting user list:", error);
       });
 
+=======
+         axios.get('https://chatserver-3fp6.onrender.com/getChatHistory', {
+            params: { user: user }, // Pass the logged-in user's username as a parameter
+        })
+        .then((response) => {
+            const chatHistory = response.data.data;
+            setMessages(chatHistory);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+        // getting userlit 
+         
+>>>>>>> 2f4c21d94d5b3bc8d2a9c719d48f93ea6cf86a0e
     return () => {
       socket.off();
     };
