@@ -19,7 +19,7 @@ const Join = () => {
         <div className="JoinPage">
             <div className="JoinContainer">
                 <img src="./chat_icon.png" alt="logo" />
-                <h1> Sasta Messenger</h1>
+                <h1>Start Chating Now..</h1>
                 <input onChange={(e) => setname(e.target.value)} placeholder="Enter Your Name" type="text" id="joinInput" />
                 <Link onClick={(event) => !name ? event.preventDefault() : null} to="/chat">  <button onClick={sendUser} className="joinbtn">Login In</button></Link>
             </div>

@@ -8,136 +8,237 @@ import ReactScrollToBottom from "react-scroll-to-bottom";
 import closeIcon from "../../images/closeIcon.png";
 import EmojiPicker from '../Emoji/Emoji';
 import axios from 'axios'
+import {FiDelete} from 'react-icons/fi'
 import {user} from '../Join/Join'
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 let socket;
 
-const ENDPOINT = "https://chat-server2-g295.onrender.com/";
+// const ENDPOINT = "https://chat-server2-g295.onrender.com/";
+const ENDPOINT = "http://localhost:5000/";
 
 const Chat = () => {
     const [id, setid] = useState("");
     const [messages, setMessages] = useState([])
     const [users, setUsers] = useState([]);
-   
+    const [sender, setSender] = useState("");
+    const [receiver, setReceiver] = useState("");
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [activeUser, setActiveUser] = useState("");
+  
+ 
+const send = () => {
+  const message = document.getElementById("chatInput").value;
+  const sender = user;
+  const recipient = selectedUser; 
+  
+  console.log(message)// Add the recipient's username here
+  // socket.emit("sendMessage", { sender, message,recipient });
+  socket.emit("sendMessage", {
+    sender: sender, // The sender's username
+    message: message, // The message content
+    recipient: selectedUser, // The selected recipient's username
+  });
+  document.getElementById("chatInput").value = "";
 
+  setMessages((prevMessages) => [
+    ...prevMessages,
+    { sender, message },
+  ]);
 
-    const send = () => {
-        const message = document.getElementById('chatInput').value;
-        const sender = user; // Replace with the actual sender value
-        socket.emit('sendMessage', { sender, message });
-        document.getElementById('chatInput').value = '';
-      };
+};
 
-    useEffect(()=>{
-    socket = socketIo(ENDPOINT, { transports: ['websocket'] });
-
-    socket.on('connect', () => {
-     window.alert('Connected');
-    });
-
-    socket.emit('joined', { user });
+  const clearChat = () => {
+      toast("All chat cleared ")
+      socket.emit('clearChat');
+      setMessages([]);
+      
+    };
+    
     
 
-    socket.on('welcome', (data) => {
+    useEffect(()=>{
+    
+      socket = socketIo(ENDPOINT, { transports: ['websocket'] });
+
+     
+      
+  
+  socket.on('connect', () => {
+        toast( `User is joined`)
+        setSender(user); 
+      });
+    
+    socket.on('userJoined', (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
+      const joinedUser = { username: data.sender, connected: true, isAdmin: false };
+      const currentUser = { username: user, connected: true, isAdmin: true };
+   
+      setUsers((prevUsers) => [...prevUsers, data.sender === user ? currentUser : joinedUser]);
+  
     });
 
-    socket.on('userJoined', (data) => {
-        console.log(data);
-      setMessages((prevMessages) => [...prevMessages, data]);
-      setUsers((prevUsers) => [...prevUsers, data.sender]);
+    
+    socket.emit('joined', { sender }); 
+    
+    socket.on('welcome', (data) => {
+      // setMessages((prevMessages) => [...prevMessages, data]);
     });
+    
 
     socket.on('disconnect', (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
       setUsers((prevUsers) => prevUsers.filter((u) => u !== data.sender));
     });
+    socket.emit(`Left ${sender}`)
 
-    // Rest of the socket event listeners...
+    // clear All chat
+
+    socket.on('chatCleared', () => {
+      setMessages([]); // Clear chat messages in the UI
+    });
+
+    
+    // 
+
+    socket.on("receiveMessage", ({ sender, message }) => {
+      if (sender === activeUser) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender, message },
+        ]);
+      }
+    });
 
     return () => {
       socket.emit('disconnected');
       socket.off();
     };
-  }, []);
+  },[activeUser]);
 
+  // 'https://chat-server2-g295.onrender.com/getChatHistory'
 
 
   useEffect(() => {
+
     socket.on('sendMessage', (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
-  
-    // Retrieve chat history from the server
     
-         axios.get('https://chat-server2-g295.onrender.com/getChatHistory', {
-            params: { user: user }, // Pass the logged-in user's username as a parameter
-        })
-        .then((response) => {
-            const chatHistory = response.data.data;
-            setMessages(chatHistory);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-        // getting userlit 
-         
+    // Retrieve chat history from the server
+    axios
+    .get('http://localhost:5000/getChatHistory', {
+      params: { sender, receiver },
+    })
+    .then((response) => {
+      const chatHistory = response.data.data;
+      setMessages(chatHistory);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+    // Fetch user list
+    axios
+      .get("http://localhost:5000/getuser", {
+        params: { user: user }
+      })
+      .then((response) => {
+        
+        setUsers(response.data.data.map((u) => ({ ...u, connected: true })));
+      })
+      .catch((error) => {
+        console.log("Error getting user list:", error);
+      });
+
     return () => {
       socket.off();
     };
-  }, [users]);
-  console.log(users);
+  }, [sender, receiver]);
+
     return (
         <div className="chatPage">
           <div className="user_contaoner">
-        <div className="user_container">
-      
-                       <div className="user-profile">
-                            <div className="user-img">
-                            <img src="./logo-2.png" alt="" />
-                            </div>
-                            <div className="user-name">
-                                <p>Md irshad</p>
-                            </div>
-                       </div>
-                        <ul>
-                            {users.map((user) => (
-                            <li key={user}>{user}</li>
-                            ))}
-                        </ul>
-     
-    
-        </div>
-          </div>
-            <div className="chatContainer">
-                <div className="header">
-                    <h2>Start Chating... </h2>
-                    <a href="/"> <img src={closeIcon} alt="Close" /></a>
+             <div className="user_container">
+                <div className="user-profile">
+                  <div className="user-img">
+                    <img src="./admin.png" alt="" />
+                  </div>
+                  <div className="user-name">
+                    <p>{user}</p>
+                  </div>
+                  
                 </div>
+                <ul>
+                {users
+                  .filter((user) => !user.isAdmin) // Exclude admin user from the list
+                  .map((user) => (
+                    <div  className='user-list' key={user.username} onClick={(() =>{
+                      setActiveUser(user)
+                      setSelectedUser(user.username);
+                    })}>
+                          <div id="inner-sec">
+                            <img src="./profile.png" alt="" />
+                            <p>{user.username}</p>
+                          </div>
+                    </div>
+                  ))}
+                </ul>
+            </div>
+        </div>
+        {/* conditional renderign  */}
+             
+
+          <div className="chatContainer">
+          <ToastContainer/>
+          <div id='conditions'>
+               {
+              selectedUser ? (
+                  <div className="chatContainer">
+                    {/* Chat box content */}
+                  </div>
+                ) : (
+                  <div className="noChatSelected">Please select a user to start chatting</div>
+                )
+                }
+             </div>
+
+            <div className="header">
+                <div>
+                      <h2>Chatting with {selectedUser}</h2>
+                      {/* Close button */}
+
+                  </div>
+                <div className="clear-chat" onClick={clearChat}>
+                  <p>Clear Chat</p>
+                    <FiDelete />
+                 </div>
+                 
+            </div> 
                 <ReactScrollToBottom className="chatBox">
-                {
-                    users.length >0 ? 
-                    messages.map((item, i) => (
-                        <Message
-                            key={i}
-                            user={item.sender}
-                            message={item.message}
-                            classs={item.sender === user ? 'right' : 'left'}
-                        />
-                        ))
-                     :""
-                 }
-                
+                  {messages.map((item, i) => (
+                    <Message
+                      key={i}
+                      user={item.sender}
+                      message={item.message}
+                      classs={item.sender === user ? 'right' : 'left'}
+                    />
+                  ))}
                 </ReactScrollToBottom>
                 <div className="inputBox">
-                    <input onKeyPress={(event) => event.key === 'Enter' ? send() : null} type="text" id="chatInput" />
-                    <button onClick={send} className="sendBtn"><img src={sendLogo} alt="Send" /></button>
-                    
+                  <input
+                    onKeyPress={(event) => event.key === 'Enter' ? send() : null}
+                    type="text"
+                    id="chatInput"
+                    disabled={!selectedUser} // Disable input if no user is selected
+                  />
+                  <button onClick={send} className="sendBtn" disabled={!selectedUser}>
+                    <img src={sendLogo} alt="Send" />
+                  </button>
                 </div>
-  
-
             </div>
-
-        </div>
+      </div>
     )
 }
 
