@@ -42,6 +42,7 @@ div#inner-sec img {
     width: 15vw;
     margin: auto;
     height: fit-content;
+    margin-top: 13px;
 }
 .clear-chat:active{
     background-color: red;
@@ -102,16 +103,15 @@ div#inner-sec img {
 
 
 .chatBox{
- height: 85%;
+    height: 80vh;
  box-sizing: border-box;
-     width: 99%;
+
  
 }
 
 .inputBox{
     box-sizing: border-box;
     display: flex;
-    height: 7%;
     margin-top:-1vh;
 }
 .user_contaoner {
@@ -122,8 +122,54 @@ div#inner-sec img {
     height: 95vh;
     box-shadow: -85px 0 5px 0px darkseagreen
 }
+
+.user-list-container {
+    
+    max-height: 59vh;
+    min-height: 5vh;
+    overflow-y: scroll;
+    /* scroll-behavior: smooth; */
+    /* scroll-padding: 200px; */
+    width: 20vw;
+    height: inherit;
+
+}
+.hide-user .show_chat_box{
+    opacity: 10;
+}
+.hide-user{
+    opacity: 0.1;
+}
+.opacity-view {
+    opacity: 0.2;
+    background: radial-gradient(black, transparent);
+}
+.warning-msg {
+    position: absolute;
+    top: 37%;
+    left: 42%;
+    right: 21%;
+    font-size: medium;
+    font-family: inherit;
+    text-transform: initial;
+    font-weight: bolder;
+    color-scheme: auto;
+    color: darkgreen;
+}
+
 .user_contaoner{
-    height:86vh
+     
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        background: center;
+        color: whitesmoke;
+        font-family: fangsong;
+        max-width: 30vw;
+        min-width: 22vw;
+        min-width: 200px;
+       
+        z-index: 999;
 }
 .user_container li{
     

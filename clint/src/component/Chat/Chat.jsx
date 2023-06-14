@@ -27,8 +27,6 @@ const Chat = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [activeUser, setActiveUser] = useState("");
   
-    
-    
  
 const send = () => {
   const message = document.getElementById("chatInput").value;
@@ -121,26 +119,32 @@ const send = () => {
 
   // 'https://chat-server2-g295.onrender.com/getChatHistory'
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      axios.get('https://chatserver-3fp6.onrender.com/getChatHistory', {
+        params: { sender, receiver },
+      })
+      .then((response) => {
+        const chatHistory = response.data.data;
+        setMessages(chatHistory);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [sender]);
+
 
   useEffect(() => {
 
     socket.on('sendMessage', (data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
-    
-    // Retrieve chat history from the server
-    axios
-    .get('https://chatserver-3fp6.onrender.com/getChatHistory', {
-      params: { sender, receiver },
-    })
-    .then((response) => {
-      const chatHistory = response.data.data;
-      setMessages(chatHistory);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-
+  
     // Fetch user list
     axios
       .get("https://chatserver-3fp6.onrender.com/getuser", {
@@ -162,16 +166,16 @@ const send = () => {
     return (
         <div className="chatPage">
           <div className="user_contaoner">
-             <div className="user_container">
-                <div className="user-profile">
-                  <div className="user-img">
-                    <img src="./admin.png" alt="" />
-                  </div>
-                  <div className="user-name">
-                    <p>{user}</p>
-                  </div>
-                  
-                </div>
+              <div className="user-profile">
+                      <div className="user-img">
+                        <img src="./admin.png" alt="" />
+                      </div>
+                      <div className="user-name">
+                        <p>{user}</p>
+                      </div>
+              </div>
+
+             <div className="user-list-container">
                 <ul>
                 {users
                   .filter((user) => !user.isAdmin) // Exclude admin user from the list
@@ -194,20 +198,13 @@ const send = () => {
 
           <div className="chatContainer">
           <ToastContainer/>
-          <div id='conditions'>
-               {
-              selectedUser ? (
-                  <div className="chatContainer">
-                    {/* Chat box content */}
-                  </div>
-                ) : (
-                  <div className="noChatSelected">Please select a user to start chatting</div>
-                )
-                }
-             </div>
 
-            <div className="header">
+            <div>
+              {
+                selectedUser ? (
                 <div>
+                  <div className="header">
+                    <div>
                       <h2>Chatting with {selectedUser}</h2>
                       {/* Close button */}
 
@@ -239,7 +236,58 @@ const send = () => {
                     <img src={sendLogo} alt="Send" />
                   </button>
                 </div>
+                  </div>
+                ) : (
+                  <>
+                  <div className="warning-msg">
+                         <h1>Please select the user that
+                          <br />
+                           you want to chat with </h1>
+                       </div>
+                  <div className='opacity-view'>
+                       
+
+                        <div className="header">
+                    <div>
+                      <h2>Chatting with {selectedUser}</h2>
+                      {/* Close button */}
+
+                  </div>
+                <div className="clear-chat" onClick={clearChat}>
+                  <p>Clear Chat</p>
+                    <FiDelete />
+                 </div>
+                 
+            </div> 
+                <ReactScrollToBottom className="chatBox">
+                  {messages.map((item, i) => (
+                    <Message
+                      key={i}
+                      user={item.sender}
+                      message={item.message}
+                      classs={item.sender === user ? 'right' : 'left'}
+                    />
+                  ))}
+                </ReactScrollToBottom>
+                <div className="inputBox">
+                  <input
+                    onKeyPress={(event) => event.key === 'Enter' ? send() : null}
+                    type="text"
+                    id="chatInput"
+                    disabled={!selectedUser} // Disable input if no user is selected
+                  />
+                  <button onClick={send} className="sendBtn" disabled={!selectedUser}>
+                    <img src={sendLogo} alt="Send" />
+                  </button>
+                </div>
+                  </div>
+                  
+                  
+                  </>
+                )
+              }
             </div>
+          </div>
       </div>
     )
 }
