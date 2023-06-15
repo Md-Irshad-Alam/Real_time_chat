@@ -127,7 +127,7 @@ div#inner-sec img {
     
     max-height: 59vh;
     min-height: 5vh;
-    overflow-y: scroll;
+    overflow-y:auto;
     /* scroll-behavior: smooth; */
     /* scroll-padding: 200px; */
     width: 20vw;
